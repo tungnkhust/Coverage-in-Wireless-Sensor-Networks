@@ -6,35 +6,25 @@ from config.get_config import *
 from data.genarate_data import get_data
 from typing import List
 
-B, targets = get_data()
 
-targets, close_target = find_arc_of_target(targets)
+def plot_target(targets: List[Target], c='b', marker='*', s=10, plot_circel=True, figure=None, axes=None):
+    if figure is None and axes is None:
+        figure, axes = plt.figure(), plt.gca()
 
-
-
-figure, axes = plt.figure(), plt.gca()
-
-plt.text(x=B.x + 1, y=B.y + 1, s='B', fontsize=12)
-plt.scatter([B.x], [B.y], c='black', marker='*', s=10)
-for t in targets:
-    axes.add_patch(plt.Circle((t.x, t.y), radius=Rs, color='g', fill=False))
-    plt.scatter([t.x], [t.y], c='k', marker='+', s=10)
-    plt.text(x=t.x + 1, y=t.y + 1, s=str(t.id), fontsize=8)
-# plt.plot([B.x, B.x], [-20, 120])
-# plt.plot([-20, 120], [B.y, B.y], )
-color = ['b', 'r', 'y', 'c', 'm', 'k']
-
-paretos = find_pareto_of_targets(targets, B)
-
-for temp in paretos[0]:
-    plt.scatter([temp.x], [temp.y], c=color[0], marker='*', s=10)
-    for arc in temp.set_arc:
-        plt.plot([arc[0].x, arc[1].x], [arc[0].y, arc[1].y], 'b', '-')
-        mid = midpoint(arc[0], arc[1])
-        plt.text(x=mid.x, y=mid.y, s=str(arc[2]), fontsize=8, color='r')
+    for t in targets:
+        plt.scatter([t.x], [t.y], c=c, marker=marker, s=s)
+        plt.text(x=t.x + 0.5, y=t.y + 0.5, s=str(t.id), fontsize=8)
+        if plot_circel:
+            axes.add_patch(plt.Circle((t.x, t.y), radius=Rs, color='g', fill=False))
 
 
-plt.axis('scaled')
-plt.savefig('graph.png')
-plt.show()
+def plot_arc(targets: List[Target]):
+    for j, t in enumerate(targets):
+        for arc in t.set_arc:
+            plt.plot([arc.p1.x, arc.p2.x], [arc.p1.y, arc.p2.y], 'C{}'.format(j % 10), '-')
+            mid = midpoint(arc.p1, arc.p2)
+            plt.text(x=mid.x, y=mid.y, s=str(arc.degree), fontsize=8, color='r')
+
+
+
 

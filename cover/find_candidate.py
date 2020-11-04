@@ -15,11 +15,8 @@ def get_close_target(targets):
                 if distance(targets[i], targets[j]) <= 2 * Rs:
                     targets[i].set_close_targets.append(targets[j])
                     targets[j].set_close_targets.append(targets[i])
-    close_target = {}
-    for target in targets:
-        close_target[target] = target.num_close_targets()
-    close_target = sorted(close_target.items(), key=lambda kv: kv[1], reverse=True)
-    return targets, close_target
+
+    return targets
 
 
 def find_pareto_of_targets(targets: List[Target], B: Point):
@@ -38,16 +35,17 @@ def find_pareto_of_targets(targets: List[Target], B: Point):
             s4.append(t)
     s = [s1, s2, s3, s4]
     s_ = []
+
     for si in s:
         s_.extend(find_pareto(si, B))
 
     res = [[]]
     for t in s_:
-        if t.d < len(res):
-            res[t.d].append(t)
+        if t.dominant < len(res):
+            res[t.dominant].append(t)
         else:
             res.append([])
-            res[t.d].append(t)
+            res[t.dominant].append(t)
 
     return res
 
@@ -56,7 +54,7 @@ def find_pareto(s: List[Target], B: Point):
     if len(s) == 0:
         return []
     if len(s) == 1:
-        s[0].d = 0
+        s[0].dominant = 0
     temp = [(np.abs(t.x - B.x), np.abs(t.y - B.y)) for t in s]
     d = []
     for i in range(len(s)):
@@ -75,7 +73,7 @@ def find_pareto(s: List[Target], B: Point):
         for i in range(len(d)):
             if check[i] is False:
                 if len(d[i]) == 0:
-                    s[i].d = c
+                    s[i].dominant = c
                     check[i] = True
                     d0.append(i)
         for i in d0:
@@ -87,12 +85,30 @@ def find_pareto(s: List[Target], B: Point):
 
 
 def find_arc_of_target(targets: List[Target]):
-    targets, close_target = get_close_target(targets)
+    targets = get_close_target(targets)
     for i in range(NUM_TARGET):
         targets[i].find_coverage_arc()
 
-    return targets, close_target
+    return targets
 
-# B, targets = get_data()
+
+def find_candidates(targets: List[Target]):
+    targets = find_arc_of_target(targets)
+    close_target = {}
+    for target in targets:
+        close_target[target] = target.num_close_targets()
+    close_target = sorted(close_target.items(), key=lambda kv: kv[1], reverse=True)
+    targets = [item[0] for item in close_target]
+
+    candidates = []
+    for t in targets:
+        if t.num_close_targets() > 0:
+            candidates.extend(t.get_candidate())
+    return candidates
+
+B, targets = get_data()
 #
 # find_pareto_of_targets(targets, B)
+
+candidates = find_candidates(targets)
+print(candidates)

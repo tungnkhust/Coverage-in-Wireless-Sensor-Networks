@@ -11,6 +11,8 @@ class Point:
     def __init__(self, x, y):
         self.x = x
         self.y = y
+        self.candidate = False
+        self.located = False
         self.set_cover = []
         self.set_covered = []
 
@@ -134,6 +136,30 @@ def find_cover_of_line(line: [Point, Point] = None, points: List[Point] = None):
     return set_cover
 
 
+class Arc:
+    def __init__(self, p1: Point, p2: Point, degree=1):
+        self.p1 = p1
+        self.p2 = p2
+        self.degree = degree
+
+        if p1.degree() <= p2.degree():
+            self.set_cover = p1.set_cover
+        elif p2.degree() <= p1.degree():
+            self.set_cover = p2.set_cover
+
+    def __str__(self):
+        return str('({}, {}): {}'.format(str(self.p1), str(self.p1), self.degree))
+
+    def __repr__(self):
+        return str('({}, {}): {}'.format(str(self.p1), str(self.p1), self.degree))
+
+    def __len__(self):
+        return len(self.set_cover)
+
+    def n_cover(self):
+        return len([x for x in self.set_cover if x.located is False])
+
+
 class Target(Point):
     def __init__(self, x, y, id, q):
         super(Target, self).__init__(x, y)
@@ -141,9 +167,7 @@ class Target(Point):
         self.y = y
         self.id = id
         self.q = q
-        self.d = -1
-        self.candidate = False
-        self.located = False
+        self.dominant = -1
         self.set_arc = []
         self.set_close_targets = []
         self.set_intersection_points = []
@@ -158,10 +182,10 @@ class Target(Point):
         return hash(self.id)
 
     def __repr__(self):
-        return 'T{}({}, {}): {}'.format(self.id, self.x, self.y, self.d)
+        return 'T{}({}, {}): {}'.format(self.id, self.x, self.y, self.q)
 
     def __str__(self):
-        return 'T{}({}, {}): {}'.format(self.id, self.x, self.y, self.d)
+        return 'T{}({}, {}): {}'.format(self.id, self.x, self.y, self.q)
 
     def find_close_target(self, targets):
         for t in targets:
@@ -191,11 +215,12 @@ class Target(Point):
             if len(self.set_close_targets) == 0:
                 return
             self.find_intersection_point()
-        set_close_targets = self.set_close_targets
+        set_close_targets = [x for x in self.set_close_targets]
         set_close_targets.append(self)
         for i, p in enumerate(self.set_intersection_points):
             self.set_intersection_points[i].set_cover = find_cover_of_point(p, set_close_targets)
 
+        set_arc = []
         for i in range(len(self.set_intersection_points)):
             p1 = self.set_intersection_points[i]
             for j in range(i+1, len(self.set_intersection_points)):
@@ -208,11 +233,18 @@ class Target(Point):
                         if mid == midpoint(set_line_cover[0], set_line_cover[1]):
                             continue
                         else:
-                            self.set_arc.append((p1, p2, line_degree))
+                            set_arc.append(Arc(p1, p2, line_degree))
                     else:
-                        self.set_arc.append((p1, p2, line_degree))
+                        set_arc.append(Arc(p1, p2, line_degree))
+        set_arc = sorted(set_arc, key=lambda kv: kv.n_cover(), reverse=True)
 
+        self.set_arc = set_arc
 
+    def get_candidate(self):
+        candidates = []
+        print(self)
+
+        return candidates
 
 
 
