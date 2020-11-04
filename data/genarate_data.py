@@ -24,7 +24,10 @@ def get_data():
             B = data[0].replace('\n', '').split(' ')
             xs = data[1].replace('\n', '').split(' ')
             ys = data[2].replace('\n', '').split(' ')
-            qs = data[2].replace('\n', '').split(' ')
+            if CHANGE_Q:
+                qs = np.random.randint(low=Q_MIN, high=Q_MAX, size=NUM_TARGET)
+            else:
+                qs = data[3].replace('\n', '').split(' ')
             B = Point(float(B[0]), float(B[1]))
             targets = [Target(float(xs[i]), float(ys[i]), i, int(qs[i])) for i in range(NUM_TARGET)]
 

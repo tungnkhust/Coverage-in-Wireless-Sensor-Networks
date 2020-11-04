@@ -14,7 +14,6 @@ class Point:
         self.candidate = False
         self.located = False
         self.set_cover = []
-        self.set_covered = []
 
     def degree(self):
         return len(self.set_cover)
@@ -38,6 +37,18 @@ class Point:
 def midpoint(p1: Point, p2:Point):
     x = (p1.x + p2.x) / 2
     y = (p1.y + p2.y) / 2
+    return Point(x, y)
+
+
+def find_point_in_line(A: Point, B: Point, d: 0):
+    """
+    :param A: Point A
+    :param B: Point B
+    :param d: ratio of vector AC/AB
+    :return: C = A + AC/AB * AB (AC, AB is vector).
+    """
+    x = A.x + d*(B.x-A.x)
+    y = A.y + d*(B.y-A.y)
     return Point(x, y)
 
 
@@ -137,7 +148,8 @@ def find_cover_of_line(line: [Point, Point] = None, points: List[Point] = None):
 
 
 class Arc:
-    def __init__(self, p1: Point, p2: Point, degree=1):
+    def __init__(self, center: Point, p1: Point, p2: Point, degree=1):
+        self.center = center
         self.p1 = p1
         self.p2 = p2
         self.degree = degree
@@ -159,6 +171,34 @@ class Arc:
     def n_cover(self):
         return len([x for x in self.set_cover if x.located is False])
 
+    def candidate(self, ratio=0.0):
+        """
+        :param ratio: C in AB, ratio is AC/AB. ratio is greater than 0.
+                    if ratio is 0, than C is A.
+                    if ratio is 0.5, than C is midpoint of AB.
+                    if ratio is 1, than C is B.
+        :return:
+        """
+        if ratio < 0.001:
+            return self.p1
+        elif ratio >= 0.999:
+            return self.p2
+
+        p = find_point_in_line(self.p1, self.p2, ratio)
+        d = distance(p, self.center)
+        candidate = find_point_in_line(self.center, p, Rs/d)
+        return candidate
+
+    def distance_to_base(self, B: Point):
+        mid_arc = self.candidate(ratio=0.5)
+        d = distance(B, mid_arc)
+        return d
+
+    def get_candidate(self, q):
+        ratios = list(range(0, q))
+        candidates = [self.candidate(float(r)/float(q)) for r in ratios]
+        return candidates
+
 
 class Target(Point):
     def __init__(self, x, y, id, q):
@@ -171,12 +211,17 @@ class Target(Point):
         self.set_arc = []
         self.set_close_targets = []
         self.set_intersection_points = []
+        self.set_covered = []
+        self.candidates = []
 
     def num_covered(self):
-        return len(self.set_covered)
+        return len(set(self.set_covered))
 
     def num_close_targets(self):
         return len(self.set_close_targets)
+
+    def num_candidate(self):
+        return len(set(self.candidates))
 
     def __hash__(self):
         return hash(self.id)
@@ -194,21 +239,24 @@ class Target(Point):
                     self.set_close_targets.append(t)
 
     def find_intersection_point(self):
+        set_points = []
         for t in self.set_close_targets:
             res = get_intersections_from_2_circle(self, Rs, t, Rs)
             if res is None:
                 continue
 
             if isinstance(res, Point):
-                if res not in self.set_intersection_points:
-                    self.set_intersection_points.append(res)
+                if res not in set_points:
+                    set_points.append(res)
             else:
                 ip1 = res[0]
                 ip2 = res[1]
-                if ip1 not in self.set_intersection_points:
-                    self.set_intersection_points.append(ip1)
-                if ip2 not in self.set_intersection_points:
-                    self.set_intersection_points.append(ip2)
+                if ip1 not in set_points:
+                    set_points.append(ip1)
+                if ip2 not in set_points:
+                    set_points.append(ip2)
+
+        self.set_intersection_points = set_points
 
     def find_coverage_arc(self):
         if len(self.set_intersection_points) == 0:
@@ -233,19 +281,38 @@ class Target(Point):
                         if mid == midpoint(set_line_cover[0], set_line_cover[1]):
                             continue
                         else:
-                            set_arc.append(Arc(p1, p2, line_degree))
+                            set_arc.append(Arc(self, p1, p2, line_degree))
                     else:
-                        set_arc.append(Arc(p1, p2, line_degree))
+                        set_arc.append(Arc(self, p1, p2, line_degree))
         set_arc = sorted(set_arc, key=lambda kv: kv.n_cover(), reverse=True)
 
         self.set_arc = set_arc
 
-    def get_candidate(self):
-        candidates = []
-        print(self)
+    def get_candidate(self, B: Point):
+        if self.num_candidate() >= self.q:
+            return []
+
+        if len(self.set_arc) < 1:
+            return [find_point_in_line(self, B, Rs/distance(self, B))]*(self.q-self.num_candidate())
+        elif len(self.set_arc) == 1:
+            arc = self.set_arc[0]
+        else:
+            arc = self.set_arc[0]
+            for i in range(1, len(self.set_arc)):
+                if self.set_arc[i].n_cover() >= arc.n_cover():
+                    if self.set_arc[i].distance_to_base(B) < arc.distance_to_base(B):
+                        arc = self.set_arc[i]
+                else:
+                    continue
+
+        candidates = arc.get_candidate(self.q-self.num_candidate())
+
+        for t in arc.set_cover:
+            for c in candidates:
+                if c not in t.candidates:
+                    t.candidates.append(c)
 
         return candidates
-
 
 
 

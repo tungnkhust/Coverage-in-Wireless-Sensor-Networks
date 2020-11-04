@@ -92,23 +92,20 @@ def find_arc_of_target(targets: List[Target]):
     return targets
 
 
-def find_candidates(targets: List[Target]):
+def find_candidates(targets: List[Target], B):
     targets = find_arc_of_target(targets)
-    close_target = {}
-    for target in targets:
-        close_target[target] = target.num_close_targets()
-    close_target = sorted(close_target.items(), key=lambda kv: kv[1], reverse=True)
-    targets = [item[0] for item in close_target]
+
+    paretos = find_pareto_of_targets(targets, B)
 
     candidates = []
-    for t in targets:
-        if t.num_close_targets() > 0:
-            candidates.extend(t.get_candidate())
+    for i, pareto in enumerate(paretos):
+        close_target = {}
+        for target in pareto:
+            close_target[target] = target.num_close_targets()
+        close_target = sorted(close_target.items(), key=lambda kv: kv[1], reverse=True)
+        pareto = [item[0] for item in close_target]
+        cans = []
+        for t in pareto:
+            cans.extend(t.get_candidate(B))
+        candidates.append(cans)
     return candidates
-
-B, targets = get_data()
-#
-# find_pareto_of_targets(targets, B)
-
-candidates = find_candidates(targets)
-print(candidates)

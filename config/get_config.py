@@ -14,3 +14,4 @@ with open(ROOT_PATH + '/config/config.yaml', 'r') as pf:
     Rc = config['RADIUS']['TRANSFER']
     EPSILON = config['OPTIONAL']['EPSILON']
     CHANGE_DATA = config['DATA']['CHANGE_DATA']
+    CHANGE_Q = config['TARGET']['CHANGE_Q']

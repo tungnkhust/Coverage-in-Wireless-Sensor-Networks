@@ -13,9 +13,17 @@ def plot_target(targets: List[Target], c='b', marker='*', s=10, plot_circel=True
 
     for t in targets:
         plt.scatter([t.x], [t.y], c=c, marker=marker, s=s)
-        plt.text(x=t.x + 0.5, y=t.y + 0.5, s=str(t.id), fontsize=8)
+        plt.text(x=t.x + 0.5, y=t.y + 0.5, s=str(t.q), fontsize=8)
         if plot_circel:
             axes.add_patch(plt.Circle((t.x, t.y), radius=Rs, color='g', fill=False))
+
+
+def plot_point(targets: List[Point], c='b', marker='*', linewidths=10, figure=None, axes=None):
+    if figure is None and axes is None:
+        figure, axes = plt.figure(), plt.gca()
+
+    for t in targets:
+        plt.scatter([t.x], [t.y], c=c, marker=marker, linewidths=linewidths)
 
 
 def plot_arc(targets: List[Target]):
