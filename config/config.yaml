@@ -8,7 +8,7 @@ RADIUS:
 
 TARGET:
   NUM_TARGET: 20
-  CHANGE_Q: True
+  CHANGE_Q: False
   Q_MIN: 1
   Q_MAX: 5
 

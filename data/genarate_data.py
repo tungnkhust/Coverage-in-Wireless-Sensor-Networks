@@ -26,6 +26,13 @@ def get_data():
             ys = data[2].replace('\n', '').split(' ')
             if CHANGE_Q:
                 qs = np.random.randint(low=Q_MIN, high=Q_MAX, size=NUM_TARGET)
+                with open(ROOT_PATH + '/data/data.txt', 'w') as pf:
+                    pf.write('{} {}\n'.format(B[0], B[1]))
+                    pf.write(' '.join([str(x) for x in xs]))
+                    pf.write('\n')
+                    pf.write(' '.join([str(y) for y in ys]))
+                    pf.write('\n')
+                    pf.write(' '.join([str(q) for q in qs]))
             else:
                 qs = data[3].replace('\n', '').split(' ')
             B = Point(float(B[0]), float(B[1]))

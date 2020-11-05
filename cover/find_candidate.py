@@ -46,7 +46,13 @@ def find_pareto_of_targets(targets: List[Target], B: Point):
         else:
             res.append([])
             res[t.dominant].append(t)
-
+    for i, pareto in enumerate(res):
+        far_target = {}
+        for target in pareto:
+            far_target[target] = distance(target, B)
+        far_target = sorted(far_target.items(), key=lambda kv: kv[1], reverse=True)
+        pareto = [item[0] for item in far_target]
+        res[i] = pareto
     return res
 
 
@@ -68,7 +74,7 @@ def find_pareto(s: List[Target], B: Point):
 
     check = [False] * len(d)
     c = 0
-    while all(c is True for c in check) is False:
+    while all(ci is True for ci in check) is False:
         d0 = []
         for i in range(len(d)):
             if check[i] is False:
@@ -107,5 +113,6 @@ def find_candidates(targets: List[Target], B):
         cans = []
         for t in pareto:
             cans.extend(t.get_candidate(B))
+            t.located = True
         candidates.append(cans)
     return candidates

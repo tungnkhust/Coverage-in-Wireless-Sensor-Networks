@@ -37,7 +37,7 @@ def plot_candidate(targets: List[Target], B: Point):
     plot_target(targets, axes=axes, figure=figure)
     candidates = find_candidates(targets, B)
     for i, cans in enumerate(candidates):
-        plot_point(cans, c='r', marker='+', axes=axes, figure=figure,)
+        plot_point(cans, c='C{}'.format((i+3)%10), marker='+', axes=axes, figure=figure,)
     plt.title('candidate')
     plt.savefig(ROOT_PATH + '/figures/candidate.png')
     plt.axis('scaled')

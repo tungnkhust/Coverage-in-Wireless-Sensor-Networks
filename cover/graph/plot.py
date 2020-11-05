@@ -18,7 +18,7 @@ def plot_target(targets: List[Target], c='b', marker='*', s=10, plot_circel=True
             axes.add_patch(plt.Circle((t.x, t.y), radius=Rs, color='g', fill=False))
 
 
-def plot_point(targets: List[Point], c='b', marker='*', linewidths=10, figure=None, axes=None):
+def plot_point(targets: List[Point], c='b', marker='*', linewidths=12, figure=None, axes=None):
     if figure is None and axes is None:
         figure, axes = plt.figure(), plt.gca()
 
