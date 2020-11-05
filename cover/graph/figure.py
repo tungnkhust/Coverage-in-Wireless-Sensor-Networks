@@ -191,8 +191,10 @@ class Arc:
 
     def distance_to_base(self, B: Point):
         mid_arc = self.candidate(ratio=0.5)
-        d = distance(B, mid_arc)
-        return d
+        d_mid = distance(B, mid_arc)
+        # d1 = distance(B, self.p1)
+        # d2 = distance(B, self.p2)
+        return d_mid
 
     def get_candidate(self, q):
         ratios = list(range(0, q))

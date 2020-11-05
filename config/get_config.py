@@ -15,3 +15,4 @@ with open(ROOT_PATH + '/config/config.yaml', 'r') as pf:
     EPSILON = config['OPTIONAL']['EPSILON']
     CHANGE_DATA = config['DATA']['CHANGE_DATA']
     CHANGE_Q = config['TARGET']['CHANGE_Q']
+    N_TEST = config['DATA']['N_TEST']

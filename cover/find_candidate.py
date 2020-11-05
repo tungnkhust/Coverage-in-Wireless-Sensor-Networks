@@ -38,14 +38,10 @@ def find_pareto_of_targets(targets: List[Target], B: Point):
 
     for si in s:
         s_.extend(find_pareto(si, B))
-
-    res = [[]]
+    max_dominant = max([si.dominant for si in s_])
+    res = [[]]*(max_dominant+1)
     for t in s_:
-        if t.dominant < len(res):
-            res[t.dominant].append(t)
-        else:
-            res.append([])
-            res[t.dominant].append(t)
+        res[t.dominant].append(t)
     for i, pareto in enumerate(res):
         far_target = {}
         for target in pareto:

@@ -35,10 +35,17 @@ def plot_candidate(targets: List[Target], B: Point):
     plt.scatter([B.x], [B.y], c='black', marker='*', s=10)
     plt.text(x=B.x + 0.5, y=B.y + 0.5, s='B', fontsize=12)
     plot_target(targets, axes=axes, figure=figure)
-    candidates = find_candidates(targets, B)
-    for i, cans in enumerate(candidates):
-        plot_point(cans, c='C{}'.format((i+3)%10), marker='+', axes=axes, figure=figure,)
-    plt.title('candidate')
+    cans = find_candidates(targets, B)
+    candidates = []
+    for cans_pareto in cans:
+        candidates.extend(cans_pareto)
+
+    candidates = list(set(candidates))
+    plot_point(candidates, c='r', marker='+', axes=axes, figure=figure,)
+    n_candidates = len(candidates)
+    qs = [t.q for t in targets]
+    n_q = sum(qs)
+    plt.title('N_Q:{}    N_CANDIDATE:{}    RATIO:{:.3f}'.format(n_q, n_candidates, n_candidates/n_q))
     plt.savefig(ROOT_PATH + '/figures/candidate.png')
     plt.axis('scaled')
     plt.show()
@@ -46,8 +53,8 @@ def plot_candidate(targets: List[Target], B: Point):
 
 def main():
     B, targets = get_data()
-    targets = find_arc_of_target(targets)
-    paretos = find_pareto_of_targets(targets, B)
+    # targets = find_arc_of_target(targets)
+    # paretos = find_pareto_of_targets(targets, B)
 
     # for i in range(len(paretos)):
     #     set_arc = []
