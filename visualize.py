@@ -24,10 +24,10 @@ def plot_pareto(targets: List[Target], B: Point, tarc: List[Target] = None,
     plt.axis('scaled')
     plt.title(title)
     if show:
-        plt.savefig(ROOT_PATH + '/figures/' + image_name)
+        plt.savefig(ROOT_PATH + '/results/figures/' + image_name)
         plt.show()
     else:
-        plt.savefig(ROOT_PATH + '/figures/' + image_name)
+        plt.savefig(ROOT_PATH + '/results/figures/' + image_name)
 
 
 def plot_candidate(targets: List[Target], B: Point):
@@ -46,7 +46,7 @@ def plot_candidate(targets: List[Target], B: Point):
     qs = [t.q for t in targets]
     n_q = sum(qs)
     plt.title('N_Q:{}    N_CANDIDATE:{}    RATIO:{:.3f}'.format(n_q, n_candidates, n_candidates/n_q))
-    plt.savefig(ROOT_PATH + '/figures/candidate.png')
+    plt.savefig(ROOT_PATH + '/results/figures/candidate.png')
     plt.axis('scaled')
     plt.show()
 
@@ -55,7 +55,7 @@ def main():
     B, targets = get_data()
     # targets = find_arc_of_target(targets)
     # paretos = find_pareto_of_targets(targets, B)
-
+    #
     # for i in range(len(paretos)):
     #     set_arc = []
     #     for t in paretos[i]:
@@ -64,6 +64,8 @@ def main():
     #                 image_name='pareto_{}.png'.format(i),
     #                 title='pareto_{}'.format(i))
 
+    plot_target(targets, plot_circel=True)
+    plt.axis('scaled')
     plot_candidate(targets, B)
 
 if __name__ == '__main__':

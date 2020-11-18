@@ -39,3 +39,12 @@ def get_data():
             targets = [Target(float(xs[i]), float(ys[i]), i, int(qs[i])) for i in range(NUM_TARGET)]
 
     return B, targets
+
+
+def generate_data(n_target=None, q_min=None, q_max=None):
+    B = Point(np.random.randint(W), np.random.randint(H))
+    xs = np.random.randint(W, size=n_target)
+    ys = np.random.randint(H, size=n_target)
+    qs = np.random.randint(low=q_min, high=q_max, size=n_target)
+    targets = [Target(xs[i], ys[i], i, qs[i]) for i in range(n_target)]
+    return B, targets

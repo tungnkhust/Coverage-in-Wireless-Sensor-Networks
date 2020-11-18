@@ -9,8 +9,9 @@ from typing import List
 
 
 def get_close_target(targets):
-    for i in range(NUM_TARGET):
-        for j in range(i, NUM_TARGET):
+    n_target = len(targets)
+    for i in range(n_target):
+        for j in range(i, n_target):
             if i != j:
                 if distance(targets[i], targets[j]) <= 2 * Rs:
                     targets[i].set_close_targets.append(targets[j])
@@ -87,8 +88,9 @@ def find_pareto(s: List[Target], B: Point):
 
 
 def find_arc_of_target(targets: List[Target]):
+    n_target = len(targets)
     targets = get_close_target(targets)
-    for i in range(NUM_TARGET):
+    for i in range(n_target):
         targets[i].find_coverage_arc()
 
     return targets
