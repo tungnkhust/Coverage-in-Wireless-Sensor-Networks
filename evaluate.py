@@ -15,7 +15,6 @@ def test_find_candidate(n_test, n_target, q_min, q_max):
     t_start = time.time()
     for i in range(n_test):
         print('-' * 30 + 'TEST {}'.format(i + 1) + '-' * 30)
-        print()
         pf.write('-' * 30 + 'TEST {}'.format(i + 1) + '-' * 30 + '\n')
         B, targets = generate_data(n_target=n_target, q_min=q_min, q_max=q_max)
         xs = [t.x for t in targets]
@@ -30,6 +29,7 @@ def test_find_candidate(n_test, n_target, q_min, q_max):
         pf.write(str(ys) + '\n')
         pf.write(str(qs) + '\n')
         n_q = sum(qs)
+        print(n_q)
         cans = find_candidates(targets, B)
         candidates = []
         for cans_pareto in cans:
@@ -64,7 +64,7 @@ def test_find_candidate(n_test, n_target, q_min, q_max):
 
 
 if __name__ == '__main__':
-    n_targets = [10, 20, 50, 100, 200, 500]
+    n_targets = [500]
     final_list = []
     for n_t in n_targets:
         q_, c_, r_, t_ = test_find_candidate(n_test=30, n_target=n_t, q_min=1, q_max=30)
@@ -78,4 +78,4 @@ if __name__ == '__main__':
         })
 
     df = pd.DataFrame(final_list)
-    df.to_csv(ROOT_PATH + '/results/result.csv', index=False)
+    df.to_csv(ROOT_PATH + '/results/result2.csv', index=False)

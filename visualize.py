@@ -37,11 +37,9 @@ def plot_candidate(targets: List[Target], B: Point):
     plot_target(targets, axes=axes, figure=figure)
     cans = find_candidates(targets, B)
     candidates = []
-    for cans_pareto in cans:
+    for i, cans_pareto in enumerate(cans):
         candidates.extend(cans_pareto)
-
-    candidates = list(set(candidates))
-    plot_point(candidates, c='r', marker='+', axes=axes, figure=figure,)
+        plot_point(cans_pareto, c='C{}'.format(i % 10), marker='+', axes=axes, figure=figure,)
     n_candidates = len(candidates)
     qs = [t.q for t in targets]
     n_q = sum(qs)
@@ -64,8 +62,8 @@ def main():
     #                 image_name='pareto_{}.png'.format(i),
     #                 title='pareto_{}'.format(i))
 
-    plot_target(targets, plot_circel=True)
-    plt.axis('scaled')
+    # plot_target(targets, plot_circel=True)
+    # plt.axis('scaled')
     plot_candidate(targets, B)
 
 if __name__ == '__main__':

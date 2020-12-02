@@ -35,7 +35,6 @@ def run():
         for cans_pareto in cans:
             candidates.extend(cans_pareto)
 
-        candidates = list(set(candidates))
         n_candidates = len(candidates)
 
         total_nq += n_q

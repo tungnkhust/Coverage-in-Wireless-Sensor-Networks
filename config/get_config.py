@@ -1,7 +1,7 @@
 import yaml
 import sys
 
-ROOT_PATH = sys.path[1]
+ROOT_PATH = '/home/tungnk/Desktop/learning/20201/Evolution_Computing/Coverage-in-Wireless-Sensor-Networks'
 
 with open(ROOT_PATH + '/config/config.yaml', 'r') as pf:
     config = yaml.safe_load(pf)

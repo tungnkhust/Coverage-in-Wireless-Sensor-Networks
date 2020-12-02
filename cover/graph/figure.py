@@ -169,7 +169,10 @@ class Arc:
         return len(self.set_cover)
 
     def n_cover(self):
-        return len([x for x in self.set_cover if x.located is False])
+        # return len([x for x in self.set_cover if x.located is False])
+        # print([x.q for x in self.set_cover])
+        # print([x.num_candidate() for x in self.set_cover])
+        return sum([x.q-x.num_candidate() for x in self.set_cover if (x.located is False) and (x.q-x.num_candidate())>0])
 
     def candidate(self, ratio=0.0):
         """
@@ -197,8 +200,8 @@ class Arc:
         return d_mid
 
     def get_candidate(self, q):
-        ratios = list(range(0, q))
-        candidates = [self.candidate(float(r)/float(q)) for r in ratios]
+        ratios = list(range(1, q+1))
+        candidates = [self.candidate(float(r)/float(q+1)) for r in ratios]
         return candidates
 
 
@@ -229,10 +232,10 @@ class Target(Point):
         return hash(self.id)
 
     def __repr__(self):
-        return 'T{}({}, {}): {}'.format(self.id, self.x, self.y, self.q)
+        return 'T{}({}, {})'.format(self.id, self.x, self.y)
 
     def __str__(self):
-        return 'T{}({}, {}): {}'.format(self.id, self.x, self.y, self.q)
+        return 'T{}({}, {})'.format(self.id, self.x, self.y)
 
     def find_close_target(self, targets):
         for t in targets:
@@ -299,7 +302,9 @@ class Target(Point):
         elif len(self.set_arc) == 1:
             arc = self.set_arc[0]
         else:
+            self.set_arc = sorted(self.set_arc, key=lambda kv: kv.n_cover(), reverse=True)
             arc = self.set_arc[0]
+            # print([x.n_cover() for x in self.set_arc])
             for i in range(1, len(self.set_arc)):
                 if self.set_arc[i].n_cover() >= arc.n_cover():
                     if self.set_arc[i].distance_to_base(B) < arc.distance_to_base(B):

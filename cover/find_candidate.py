@@ -6,6 +6,7 @@ from cover.graph.figure import distance, get_intersection_from_circle_and_point,
 from data.genarate_data import get_data
 from config.get_config import *
 from typing import List
+from collections import defaultdict
 
 
 def get_close_target(targets):
@@ -40,9 +41,15 @@ def find_pareto_of_targets(targets: List[Target], B: Point):
     for si in s:
         s_.extend(find_pareto(si, B))
     max_dominant = max([si.dominant for si in s_])
-    res = [[]]*(max_dominant+1)
+
+    res = {}
+    for i in range(max_dominant + 1):
+        res[i] = []
+
     for t in s_:
         res[t.dominant].append(t)
+    res = list(res.values())
+
     for i, pareto in enumerate(res):
         far_target = {}
         for target in pareto:
@@ -50,6 +57,7 @@ def find_pareto_of_targets(targets: List[Target], B: Point):
         far_target = sorted(far_target.items(), key=lambda kv: kv[1], reverse=True)
         pareto = [item[0] for item in far_target]
         res[i] = pareto
+
     return res
 
 
@@ -84,6 +92,7 @@ def find_pareto(s: List[Target], B: Point):
                 if i in d[j]:
                     d[j].remove(i)
         c += 1
+
     return s
 
 
@@ -100,17 +109,17 @@ def find_candidates(targets: List[Target], B):
     targets = find_arc_of_target(targets)
 
     paretos = find_pareto_of_targets(targets, B)
-
     candidates = []
     for i, pareto in enumerate(paretos):
         close_target = {}
         for target in pareto:
             close_target[target] = target.num_close_targets()
-        close_target = sorted(close_target.items(), key=lambda kv: kv[1], reverse=True)
+        close_target = sorted(close_target.items(), key=lambda kv: kv[1], reverse=False)
         pareto = [item[0] for item in close_target]
         cans = []
         for t in pareto:
             cans.extend(t.get_candidate(B))
             t.located = True
         candidates.append(cans)
+
     return candidates
